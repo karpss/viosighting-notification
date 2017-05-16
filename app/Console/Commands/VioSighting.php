@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Console\Commands;
-
+use Mail;
 use Illuminate\Console\Command;
 
 use GuzzleHttp\Subscriber\Oauth\Oauth1;
@@ -50,8 +50,20 @@ class VioSighting extends Command
 
         while (!$message->eof()) {
             $vio_tweet = json_decode($this->readLine($message), true);
-            echo $vio_tweet['text'] . PHP_EOL;
+           $data = array('name'=>  $vio_tweet['text'] . PHP_EOL);
+
+            Mail::send('emails.myview', $data, function ($message) {
+
+                $message->from('', 'Twitter Updates');
+
+                $message->to('')->subject('VIO Sighting');
+
+            });
+            return "Your email has been sent successfully";
         }
+
+
+
     }
 
     public function SearchTwitter($locate)
